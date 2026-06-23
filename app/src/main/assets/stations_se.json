@@ -86,5 +86,101 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": ""
+  },
+  {
+    "name": "SR P1 Hörby",
+    "frequencyMhz": 88.8,
+    "latitude": 55.8660,
+    "longitude": 13.6600,
+    "rangeKm": 115,
+    "streamUrl": "https://http-live.sr.se/p1-mp3-192"
+  },
+  {
+    "name": "SR P4 Malmöhus Hörby",
+    "frequencyMhz": 89.5,
+    "latitude": 55.8660,
+    "longitude": 13.6600,
+    "rangeKm": 70,
+    "streamUrl": "https://http-live.sr.se/p4malmohus-mp3-192"
+  },
+  {
+    "name": "SR P2 Hörby",
+    "frequencyMhz": 92.4,
+    "latitude": 55.8660,
+    "longitude": 13.6600,
+    "rangeKm": 115,
+    "streamUrl": "https://http-live.sr.se/p2-mp3-192"
+  },
+  {
+    "name": "SR P3 Hörby",
+    "frequencyMhz": 97.0,
+    "latitude": 55.8660,
+    "longitude": 13.6600,
+    "rangeKm": 115,
+    "streamUrl": "https://http-live.sr.se/p3-mp3-192"
+  },
+  {
+    "name": "Din Gata Malmö",
+    "frequencyMhz": 100.6,
+    "latitude": 55.6050,
+    "longitude": 13.0038,
+    "rangeKm": 35,
+    "streamUrl": ""
+  },
+  {
+    "name": "SR P4 Kristianstad Hörby",
+    "frequencyMhz": 101.4,
+    "latitude": 55.8660,
+    "longitude": 13.6600,
+    "rangeKm": 115,
+    "streamUrl": "https://http-live.sr.se/p4kristianstad-mp3-192"
+  },
+  {
+    "name": "Studentradion Uppsala",
+    "frequencyMhz": 98.9,
+    "latitude": 59.8586,
+    "longitude": 17.6389,
+    "rangeKm": 45,
+    "streamUrl": ""
+  },
+  {
+    "name": "City 106.5 Uppsala",
+    "frequencyMhz": 106.5,
+    "latitude": 59.8586,
+    "longitude": 17.6389,
+    "rangeKm": 55,
+    "streamUrl": ""
+  },
+  {
+    "name": "SR P1 Östhammar seed",
+    "frequencyMhz": 89.1,
+    "latitude": 60.2591,
+    "longitude": 18.3741,
+    "rangeKm": 50,
+    "streamUrl": "https://http-live.sr.se/p1-mp3-192"
+  },
+  {
+    "name": "SR P2 Östhammar seed",
+    "frequencyMhz": 91.9,
+    "latitude": 60.2591,
+    "longitude": 18.3741,
+    "rangeKm": 50,
+    "streamUrl": "https://http-live.sr.se/p2-mp3-192"
+  },
+  {
+    "name": "SR P3 Östhammar seed",
+    "frequencyMhz": 99.9,
+    "latitude": 60.2591,
+    "longitude": 18.3741,
+    "rangeKm": 50,
+    "streamUrl": "https://http-live.sr.se/p3-mp3-192"
+  },
+  {
+    "name": "SR P4 Uppland Östhammar seed",
+    "frequencyMhz": 102.5,
+    "latitude": 60.2591,
+    "longitude": 18.3741,
+    "rangeKm": 50,
+    "streamUrl": "https://http-live.sr.se/p4uppland-mp3-192"
   }
 ]
