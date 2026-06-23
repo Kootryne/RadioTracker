@@ -211,7 +211,7 @@
     "streamSearchName": "City 106.5 Uppsala"
   },
   {
-    "name": "RIX FM Uppsala/Östhammar seed",
+    "name": "RIX FM Uppland",
     "frequencyMhz": 105.5,
     "latitude": 60.2591,
     "longitude": 18.3741,
@@ -221,7 +221,7 @@
     "streamSearchName": "RIX FM"
   },
   {
-    "name": "NRJ Uppsala/Östhammar seed",
+    "name": "NRJ Uppland",
     "frequencyMhz": 105.1,
     "latitude": 60.2591,
     "longitude": 18.3741,
@@ -231,7 +231,7 @@
     "streamSearchName": "NRJ"
   },
   {
-    "name": "Mix Megapol Uppland seed",
+    "name": "Mix Megapol Uppland",
     "frequencyMhz": 104.3,
     "latitude": 60.2591,
     "longitude": 18.3741,
@@ -241,7 +241,7 @@
     "streamSearchName": "Mix Megapol"
   },
   {
-    "name": "SR P1 Östhammar seed",
+    "name": "SR P1 Östhammar",
     "frequencyMhz": 89.1,
     "latitude": 60.2591,
     "longitude": 18.3741,
@@ -250,7 +250,7 @@
     "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=132&format=json"
   },
   {
-    "name": "SR P2 Östhammar seed",
+    "name": "SR P2 Östhammar",
     "frequencyMhz": 91.9,
     "latitude": 60.2591,
     "longitude": 18.3741,
@@ -259,7 +259,7 @@
     "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=163&format=json"
   },
   {
-    "name": "SR P3 Östhammar seed",
+    "name": "SR P3 Östhammar",
     "frequencyMhz": 99.9,
     "latitude": 60.2591,
     "longitude": 18.3741,
@@ -268,7 +268,7 @@
     "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=164&format=json"
   },
   {
-    "name": "SR P4 Uppland Östhammar seed",
+    "name": "SR P4 Uppland Östhammar",
     "frequencyMhz": 102.5,
     "latitude": 60.2591,
     "longitude": 18.3741,
