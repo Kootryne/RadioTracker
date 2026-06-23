@@ -1,0 +1,90 @@
+[
+  {
+    "name": "SR P1 Stockholm",
+    "frequencyMhz": 92.4,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 90,
+    "streamUrl": "https://http-live.sr.se/p1-mp3-192"
+  },
+  {
+    "name": "SR P2 Stockholm",
+    "frequencyMhz": 96.2,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 90,
+    "streamUrl": "https://http-live.sr.se/p2-mp3-192"
+  },
+  {
+    "name": "SR P3 Stockholm",
+    "frequencyMhz": 99.3,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 90,
+    "streamUrl": "https://http-live.sr.se/p3-mp3-192"
+  },
+  {
+    "name": "SR P4 Stockholm",
+    "frequencyMhz": 103.3,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 90,
+    "streamUrl": "https://http-live.sr.se/p4stockholm-mp3-192"
+  },
+  {
+    "name": "Mix Megapol Stockholm",
+    "frequencyMhz": 104.3,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 65,
+    "streamUrl": ""
+  },
+  {
+    "name": "Lugna Favoriter Stockholm",
+    "frequencyMhz": 104.7,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 65,
+    "streamUrl": ""
+  },
+  {
+    "name": "NRJ Stockholm",
+    "frequencyMhz": 105.1,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 65,
+    "streamUrl": ""
+  },
+  {
+    "name": "RIX FM Stockholm",
+    "frequencyMhz": 105.5,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 65,
+    "streamUrl": ""
+  },
+  {
+    "name": "Bandit Rock Stockholm",
+    "frequencyMhz": 106.3,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 65,
+    "streamUrl": ""
+  },
+  {
+    "name": "Rockklassiker Stockholm",
+    "frequencyMhz": 106.7,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 65,
+    "streamUrl": ""
+  },
+  {
+    "name": "Star FM Stockholm",
+    "frequencyMhz": 107.1,
+    "latitude": 59.3293,
+    "longitude": 18.0686,
+    "rangeKm": 65,
+    "streamUrl": ""
+  }
+]
