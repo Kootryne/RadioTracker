@@ -10,7 +10,7 @@ It does **not** use a hidden phone FM chip or raw SDR scanning. Normal Android a
 4. placing those stations on a drawn 87.5–108.0 MHz FM spectrum,
 5. trying to read live `StreamTitle` metadata from configured internet radio streams.
 
-That means the spectrum placement can be accurate only when the station dataset is accurate. The current starter dataset is focused on Stockholm FM stations and is stored in:
+That means the spectrum placement can be accurate only when the station dataset is accurate. The current starter dataset includes Stockholm, a Skåne/Hörby seed set, and an Östhammar/Uppland seed set:
 
 ```text
 app/src/main/assets/stations_se.json
@@ -24,8 +24,19 @@ app/src/main/assets/stations_se.json
 - Custom FM spectrum view from 87.5 MHz to 108.0 MHz.
 - Station names are placed at their configured frequencies.
 - Estimated receive filtering with distance and range in kilometers.
+- Adjustable range threshold slider from 25% to 250%.
 - Live song metadata from ICY/Shoutcast-style stream metadata when a stream URL is configured.
 - GitHub Actions workflow that builds a debug APK.
+
+## Range slider
+
+The app now has a range threshold slider:
+
+- `100%` means the app uses the station's normal configured `rangeKm`.
+- Lower values are stricter, so fewer/farther stations are shown.
+- Higher values are looser, so weak or farther stations may be included.
+
+Example: if a station has `rangeKm: 50`, setting the slider to `150%` lets it appear up to about `75 km` away.
 
 ## Build the APK with GitHub Actions
 
@@ -36,6 +47,16 @@ app/src/main/assets/stations_se.json
 5. Install `app-debug.apk` on your Android phone.
 
 The debug APK is installable for testing, but it is not Play Store signed.
+
+## Current station data
+
+The bundled JSON database currently has:
+
+- Stockholm FM seed stations.
+- Skåne/Hörby entries for SR P1, SR P2, SR P3, P4 Malmöhus, P4 Kristianstad, plus Din Gata Malmö.
+- Uppsala/Östhammar-area seed entries, including Studentradion Uppsala, City 106.5 Uppsala, and SR P1/P2/P3/P4 Uppland Östhammar seed entries.
+
+The Östhammar entries are intentionally named `seed` because they should be replaced with exact transmitter data once you have a proper source.
 
 ## Add more radio stations
 
