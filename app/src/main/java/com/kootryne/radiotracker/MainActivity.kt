@@ -15,6 +15,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Html
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -395,14 +396,19 @@ class MainActivity : Activity() {
         val metadataText = station.metadataUrl?.let { fetchMetadataUrlNowPlaying(it) }
         if (!metadataText.isNullOrBlank()) return metadataText
 
+        val knownPlaylistText = fetchKnownPlaylistNowPlaying(station)
+        if (!knownPlaylistText.isNullOrBlank()) return knownPlaylistText
+
         val directIcyText = station.streamUrl?.let { fetchIcyStreamTitle(it) }
-        if (!directIcyText.isNullOrBlank()) return directIcyText
+        if (!directIcyText.isNullOrBlank() && !looksLikeProgramOnly(directIcyText, station)) return directIcyText
 
         val directoryText = fetchRadioBrowserNowPlaying(station)
-        if (!directoryText.isNullOrBlank()) return directoryText
+        if (!directoryText.isNullOrBlank() && !looksLikeProgramOnly(directoryText, station)) return directoryText
 
         return if (station.name.contains("NRJ", ignoreCase = true)) {
-            "NRJ live station found • song title not exposed by stream"
+            "NRJ found • playlist/stream did not expose a song right now"
+        } else if (station.name.contains("Mix Megapol", ignoreCase = true)) {
+            "Mix Megapol found • playlist/stream did not expose a song right now"
         } else if (station.metadataUrl.isNullOrBlank() && station.streamUrl.isNullOrBlank() && station.streamSearchName.isNullOrBlank()) {
             "No public song metadata source configured"
         } else {
@@ -410,13 +416,91 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun fetchKnownPlaylistNowPlaying(station: RadioStation): String? {
+        val playlistUrl = when {
+            station.name.contains("NRJ", ignoreCase = true) -> "https://onlineradiobox.com/se/nrj/playlist/"
+            station.name.contains("Mix Megapol", ignoreCase = true) -> "https://onlineradiobox.com/se/mixmegapol/playlist/"
+            else -> null
+        } ?: return null
+
+        return fetchOnlineRadioBoxNowPlaying(playlistUrl)
+    }
+
     private fun fetchMetadataUrlNowPlaying(metadataUrl: String): String? {
         return try {
-            val jsonText = fetchText(metadataUrl) ?: return null
-            val root = JSONObject(jsonText)
+            val text = fetchText(metadataUrl) ?: return null
+            if (metadataUrl.contains("onlineradiobox.com", ignoreCase = true) || text.trimStart().startsWith("<")) {
+                return extractOnlineRadioBoxNowPlaying(text)
+            }
+
+            val root = JSONObject(text)
             extractSongFromJson(root)
         } catch (_: Exception) {
             null
+        }
+    }
+
+    private fun fetchOnlineRadioBoxNowPlaying(playlistUrl: String): String? {
+        val htmlText = fetchText(playlistUrl) ?: return null
+        return extractOnlineRadioBoxNowPlaying(htmlText)
+    }
+
+    private fun extractOnlineRadioBoxNowPlaying(htmlText: String): String? {
+        val markerIndex = listOf(
+            "track list for the past",
+            "Show by radio station time",
+            "playlist stores",
+            "playlist"
+        ).mapNotNull { marker ->
+            htmlText.indexOf(marker, ignoreCase = true).takeIf { it >= 0 }
+        }.minOrNull() ?: 0
+
+        val searchArea = htmlText.substring(markerIndex.coerceIn(0, htmlText.length))
+        val plainText = htmlToPlainText(searchArea)
+            .replace(Regex("\\s+"), " ")
+            .trim()
+
+        val liveIndex = plainText.indexOf("Live ", ignoreCase = true)
+        if (liveIndex < 0) return null
+
+        val afterLive = plainText.substring(liveIndex + "Live ".length).trim()
+        if (afterLive.isBlank()) return null
+
+        val nextTime = Regex("\\s\\d{1,2}:\\d{2}\\s").find(afterLive)
+        val endIndex = nextTime?.range?.first ?: afterLive.length.coerceAtMost(180)
+        return cleanTrackText(afterLive.substring(0, endIndex))
+    }
+
+    private fun htmlToPlainText(htmlText: String): String {
+        return Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY).toString()
+    }
+
+    private fun cleanTrackText(text: String): String? {
+        val cleaned = text
+            .replace(Regex("\\s+"), " ")
+            .trim()
+            .trim('-', '•', '|')
+            .trim()
+
+        if (cleaned.length < 3) return null
+
+        val lower = cleaned.lowercase()
+        if (lower.contains("ad break")) return null
+        if (lower.contains("inga låtar hittades")) return null
+        if (lower.contains("no song")) return null
+        if (lower.startsWith("show by radio station time")) return null
+        if (lower.startsWith("listen on apple music")) return null
+        if (lower.startsWith("install the free")) return null
+
+        return cleaned
+    }
+
+    private fun looksLikeProgramOnly(text: String, station: RadioStation): Boolean {
+        val lower = text.lowercase().trim()
+        return when {
+            station.name.contains("NRJ", ignoreCase = true) -> lower == "nrj" || lower.contains("hit story") || lower.contains("hitstory") || lower.contains("hit music only")
+            station.name.contains("Mix Megapol", ignoreCase = true) -> lower == "mix megapol" || lower == "mix megapol live"
+            else -> false
         }
     }
 
@@ -512,8 +596,8 @@ class MainActivity : Activity() {
             connection.connectTimeout = 7_000
             connection.readTimeout = 12_000
             connection.instanceFollowRedirects = true
-            connection.setRequestProperty("Accept", "application/json, text/plain, */*")
-            connection.setRequestProperty("User-Agent", "RadioTracker Android")
+            connection.setRequestProperty("Accept", "application/json, text/html, text/plain, */*")
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Android; RadioTracker) AppleWebKit/537.36 Chrome/126 Mobile Safari/537.36")
 
             val code = connection.responseCode
             if (code !in 200..299) return null
