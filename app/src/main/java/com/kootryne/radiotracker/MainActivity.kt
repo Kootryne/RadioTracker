@@ -25,6 +25,7 @@ import org.json.JSONObject
 import java.io.BufferedInputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 import java.util.concurrent.Executors
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -298,13 +299,16 @@ class MainActivity : Activity() {
         val metadataText = station.metadataUrl?.let { fetchMetadataUrlNowPlaying(it) }
         if (!metadataText.isNullOrBlank()) return metadataText
 
-        val icyText = station.streamUrl?.let { fetchIcyStreamTitle(it) }
-        if (!icyText.isNullOrBlank()) return icyText
+        val directIcyText = station.streamUrl?.let { fetchIcyStreamTitle(it) }
+        if (!directIcyText.isNullOrBlank()) return directIcyText
 
-        return if (station.metadataUrl.isNullOrBlank() && station.streamUrl.isNullOrBlank()) {
+        val directoryIcyText = fetchRadioBrowserNowPlaying(station)
+        if (!directoryIcyText.isNullOrBlank()) return directoryIcyText
+
+        return if (station.metadataUrl.isNullOrBlank() && station.streamUrl.isNullOrBlank() && station.streamSearchName.isNullOrBlank()) {
             "No public song metadata source configured"
         } else {
-            "No song playing or metadata unavailable"
+            "No song metadata found"
         }
     }
 
@@ -348,6 +352,44 @@ class MainActivity : Activity() {
             artist.isNotBlank() -> artist
             else -> null
         }
+    }
+
+    private fun fetchRadioBrowserNowPlaying(station: RadioStation): String? {
+        val searchName = stationSearchName(station)
+        if (searchName.isBlank()) return null
+
+        val encodedName = URLEncoder.encode(searchName, "UTF-8")
+        val searchUrl = "https://de1.api.radio-browser.info/json/stations/search?name=$encodedName&countrycode=SE&hidebroken=true&limit=8&order=clickcount&reverse=true"
+
+        return try {
+            val jsonText = fetchText(searchUrl) ?: return null
+            val results = JSONArray(jsonText)
+            for (index in 0 until results.length()) {
+                val item = results.optJSONObject(index) ?: continue
+                val urlResolved = item.optString("url_resolved", "").trim()
+                val url = item.optString("url", "").trim()
+                val streamUrl = urlResolved.ifBlank { url }
+                if (streamUrl.isBlank()) continue
+
+                val song = fetchIcyStreamTitle(streamUrl)
+                if (!song.isNullOrBlank()) return song
+            }
+            null
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun stationSearchName(station: RadioStation): String {
+        station.streamSearchName?.let { return it }
+        return station.name
+            .replace(" Stockholm", "")
+            .replace(" Hörby", "")
+            .replace(" Malmö", "")
+            .replace(" Uppsala", "")
+            .replace(" Östhammar", "")
+            .replace(" seed", "")
+            .trim()
     }
 
     private fun fetchText(url: String): String? {
@@ -435,7 +477,8 @@ private object StationRepository {
                         longitude = item.getDouble("longitude"),
                         rangeKm = item.getDouble("rangeKm"),
                         streamUrl = item.optString("streamUrl", "").takeIf { it.isNotBlank() },
-                        metadataUrl = item.optString("metadataUrl", "").takeIf { it.isNotBlank() }
+                        metadataUrl = item.optString("metadataUrl", "").takeIf { it.isNotBlank() },
+                        streamSearchName = item.optString("streamSearchName", "").takeIf { it.isNotBlank() }
                     )
                 )
             }
@@ -451,6 +494,7 @@ data class RadioStation(
     val rangeKm: Double,
     val streamUrl: String?,
     val metadataUrl: String?,
+    val streamSearchName: String?,
     val distanceKm: Double = 0.0,
     val nowPlaying: String = "Waiting for metadata"
 )
