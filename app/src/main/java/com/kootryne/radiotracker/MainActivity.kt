@@ -21,6 +21,7 @@ import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import org.json.JSONArray
+import org.json.JSONObject
 import java.io.BufferedInputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -277,11 +278,7 @@ class MainActivity : Activity() {
         val snapshot = visibleStations
         metadataExecutor.submit {
             snapshot.forEach { station ->
-                val text = if (station.streamUrl.isNullOrBlank()) {
-                    "No public song metadata source configured"
-                } else {
-                    fetchIcyStreamTitle(station.streamUrl) ?: "Live song metadata not found"
-                }
+                val text = fetchNowPlaying(station)
 
                 runOnUiThread {
                     visibleStations = visibleStations.map { current ->
@@ -294,6 +291,82 @@ class MainActivity : Activity() {
                     updateStationViews()
                 }
             }
+        }
+    }
+
+    private fun fetchNowPlaying(station: RadioStation): String {
+        val metadataText = station.metadataUrl?.let { fetchMetadataUrlNowPlaying(it) }
+        if (!metadataText.isNullOrBlank()) return metadataText
+
+        val icyText = station.streamUrl?.let { fetchIcyStreamTitle(it) }
+        if (!icyText.isNullOrBlank()) return icyText
+
+        return if (station.metadataUrl.isNullOrBlank() && station.streamUrl.isNullOrBlank()) {
+            "No public song metadata source configured"
+        } else {
+            "No song playing or metadata unavailable"
+        }
+    }
+
+    private fun fetchMetadataUrlNowPlaying(metadataUrl: String): String? {
+        return try {
+            val jsonText = fetchText(metadataUrl) ?: return null
+            val root = JSONObject(jsonText)
+            extractSongFromJson(root)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun extractSongFromJson(jsonObject: JSONObject): String? {
+        val directSong = jsonObject.optJSONObject("song")
+        if (directSong != null) {
+            parseSongObject(directSong)?.let { return it }
+        }
+
+        val playlist = jsonObject.optJSONObject("playlist")
+        if (playlist != null) {
+            extractSongFromJson(playlist)?.let { return it }
+        }
+
+        val keys = jsonObject.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val child = jsonObject.optJSONObject(key) ?: continue
+            parseSongObject(child)?.let { return it }
+        }
+
+        return null
+    }
+
+    private fun parseSongObject(song: JSONObject): String? {
+        val title = song.optString("title").trim()
+        val artist = song.optString("artist").trim()
+        return when {
+            artist.isNotBlank() && title.isNotBlank() -> "$artist — $title"
+            title.isNotBlank() -> title
+            artist.isNotBlank() -> artist
+            else -> null
+        }
+    }
+
+    private fun fetchText(url: String): String? {
+        var connection: HttpURLConnection? = null
+        return try {
+            connection = URL(url).openConnection() as HttpURLConnection
+            connection.connectTimeout = 7_000
+            connection.readTimeout = 12_000
+            connection.instanceFollowRedirects = true
+            connection.setRequestProperty("Accept", "application/json, text/plain, */*")
+            connection.setRequestProperty("User-Agent", "RadioTracker Android")
+
+            val code = connection.responseCode
+            if (code !in 200..299) return null
+            connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+        } catch (_: Exception) {
+            null
+        } finally {
+            connection?.disconnect()
         }
     }
 
@@ -361,7 +434,8 @@ private object StationRepository {
                         latitude = item.getDouble("latitude"),
                         longitude = item.getDouble("longitude"),
                         rangeKm = item.getDouble("rangeKm"),
-                        streamUrl = item.optString("streamUrl").takeIf { it.isNotBlank() }
+                        streamUrl = item.optString("streamUrl", "").takeIf { it.isNotBlank() },
+                        metadataUrl = item.optString("metadataUrl", "").takeIf { it.isNotBlank() }
                     )
                 )
             }
@@ -376,6 +450,7 @@ data class RadioStation(
     val longitude: Double,
     val rangeKm: Double,
     val streamUrl: String?,
+    val metadataUrl: String?,
     val distanceKm: Double = 0.0,
     val nowPlaying: String = "Waiting for metadata"
 )
