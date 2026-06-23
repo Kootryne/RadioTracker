@@ -18,6 +18,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.SeekBar
 import android.widget.TextView
 import org.json.JSONArray
 import java.io.BufferedInputStream
@@ -33,10 +34,14 @@ import kotlin.math.sqrt
 private const val MIN_FM_MHZ = 87.5
 private const val MAX_FM_MHZ = 108.0
 private const val LOCATION_REQUEST_CODE = 42
+private const val MIN_RANGE_PERCENT = 25
+private const val MAX_RANGE_PERCENT = 250
+private const val DEFAULT_RANGE_PERCENT = 100
 
 class MainActivity : Activity() {
     private lateinit var spectrumView: SpectrumView
     private lateinit var statusText: TextView
+    private lateinit var rangeText: TextView
     private lateinit var stationListText: TextView
     private lateinit var locationManager: LocationManager
 
@@ -44,6 +49,10 @@ class MainActivity : Activity() {
     private val metadataExecutor = Executors.newSingleThreadExecutor()
     private var allStations: List<RadioStation> = emptyList()
     private var visibleStations: List<RadioStation> = emptyList()
+    private var rangePercent = DEFAULT_RANGE_PERCENT
+    private var lastLatitude = 59.3293
+    private var lastLongitude = 18.0686
+    private var lastLocationStatus = "Using Stockholm fallback"
 
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
@@ -103,6 +112,32 @@ class MainActivity : Activity() {
 
         spectrumView = SpectrumView(this)
         root.addView(spectrumView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.2f))
+
+        rangeText = TextView(this).apply {
+            setTextColor(Color.rgb(225, 231, 240))
+            textSize = 14f
+            setPadding(0, dp(8), 0, dp(2))
+        }
+        root.addView(rangeText, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        updateRangeText()
+
+        val rangeSlider = SeekBar(this).apply {
+            max = MAX_RANGE_PERCENT - MIN_RANGE_PERCENT
+            progress = DEFAULT_RANGE_PERCENT - MIN_RANGE_PERCENT
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    rangePercent = (MIN_RANGE_PERCENT + progress).coerceIn(MIN_RANGE_PERCENT, MAX_RANGE_PERCENT)
+                    updateRangeText()
+                    showStationsForLocation(lastLatitude, lastLongitude, lastLocationStatus, reloadMetadata = false)
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    showStationsForLocation(lastLatitude, lastLongitude, lastLocationStatus, reloadMetadata = true)
+                }
+            })
+        }
+        root.addView(rangeSlider, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
         val rescanButton = Button(this).apply {
             text = "Rescan current position"
@@ -187,18 +222,40 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun showStationsForLocation(latitude: Double, longitude: Double, status: String) {
+    private fun showStationsForLocation(
+        latitude: Double,
+        longitude: Double,
+        status: String,
+        reloadMetadata: Boolean = true
+    ) {
+        lastLatitude = latitude
+        lastLongitude = longitude
+        lastLocationStatus = status
+
+        val oldMetadata = visibleStations.associateBy(
+            keySelector = { stationKey(it) },
+            valueTransform = { it.nowPlaying }
+        )
+        val multiplier = rangePercent / 100.0
+
         visibleStations = allStations
             .map { station ->
                 val distance = distanceKm(latitude, longitude, station.latitude, station.longitude)
-                station.copy(distanceKm = distance, nowPlaying = "Loading live metadata...")
+                val existingText = oldMetadata[stationKey(station)] ?: "Loading live metadata..."
+                station.copy(distanceKm = distance, nowPlaying = existingText)
             }
-            .filter { it.distanceKm <= it.rangeKm }
+            .filter { it.distanceKm <= it.rangeKm * multiplier }
             .sortedBy { it.frequencyMhz }
 
         statusText.text = "$status • ${visibleStations.size} likely FM stations nearby"
         updateStationViews()
-        loadNowPlayingMetadata()
+        if (reloadMetadata) loadNowPlayingMetadata()
+    }
+
+    private fun updateRangeText() {
+        if (::rangeText.isInitialized) {
+            rangeText.text = "Range threshold: $rangePercent% • lower = stricter, higher = catches weaker/farther stations"
+        }
     }
 
     private fun updateStationViews() {
@@ -206,11 +263,12 @@ class MainActivity : Activity() {
         spectrumView.invalidate()
 
         stationListText.text = if (visibleStations.isEmpty()) {
-            "No stations found near this position in the bundled dataset. Add more transmitters in app/src/main/assets/stations_se.json."
+            "No stations found near this position with the current range threshold. Try increasing the range slider, or add more transmitters in app/src/main/assets/stations_se.json."
         } else {
             visibleStations.joinToString(separator = "\n\n") { station ->
                 val distanceText = "${(station.distanceKm * 10.0).roundToInt() / 10.0} km away"
-                "${station.frequencyMhz} MHz — ${station.name}\n${station.nowPlaying}\n$distanceText"
+                val effectiveRange = "threshold ${(station.rangeKm * rangePercent / 100.0 * 10.0).roundToInt() / 10.0} km"
+                "${station.frequencyMhz} MHz — ${station.name}\n${station.nowPlaying}\n$distanceText • $effectiveRange"
             }
         }
     }
@@ -285,6 +343,7 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun stationKey(station: RadioStation): String = "${station.name}|${station.frequencyMhz}"
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).roundToInt()
 }
 
