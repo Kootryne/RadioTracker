@@ -5,7 +5,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 90,
-    "streamUrl": "https://http-live.sr.se/p1-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p1-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=132&format=json"
   },
   {
     "name": "SR P2 Stockholm",
@@ -13,7 +14,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 90,
-    "streamUrl": "https://http-live.sr.se/p2-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p2-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=163&format=json"
   },
   {
     "name": "SR P3 Stockholm",
@@ -21,7 +23,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 90,
-    "streamUrl": "https://http-live.sr.se/p3-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p3-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=164&format=json"
   },
   {
     "name": "SR P4 Stockholm",
@@ -29,7 +32,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 90,
-    "streamUrl": "https://http-live.sr.se/p4stockholm-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p4stockholm-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=103&format=json"
   },
   {
     "name": "Mix Megapol Stockholm",
@@ -37,7 +41,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 65,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "Lugna Favoriter Stockholm",
@@ -45,7 +50,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 65,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "NRJ Stockholm",
@@ -53,7 +59,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 65,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "RIX FM Stockholm",
@@ -61,7 +68,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 65,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "Bandit Rock Stockholm",
@@ -69,7 +77,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 65,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "Rockklassiker Stockholm",
@@ -77,7 +86,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 65,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "Star FM Stockholm",
@@ -85,7 +95,8 @@
     "latitude": 59.3293,
     "longitude": 18.0686,
     "rangeKm": 65,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "SR P1 Hörby",
@@ -93,7 +104,8 @@
     "latitude": 55.8660,
     "longitude": 13.6600,
     "rangeKm": 115,
-    "streamUrl": "https://http-live.sr.se/p1-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p1-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=132&format=json"
   },
   {
     "name": "SR P4 Malmöhus Hörby",
@@ -101,7 +113,8 @@
     "latitude": 55.8660,
     "longitude": 13.6600,
     "rangeKm": 70,
-    "streamUrl": "https://http-live.sr.se/p4malmohus-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p4malmohus-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=96&format=json"
   },
   {
     "name": "SR P2 Hörby",
@@ -109,7 +122,8 @@
     "latitude": 55.8660,
     "longitude": 13.6600,
     "rangeKm": 115,
-    "streamUrl": "https://http-live.sr.se/p2-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p2-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=163&format=json"
   },
   {
     "name": "SR P3 Hörby",
@@ -117,7 +131,8 @@
     "latitude": 55.8660,
     "longitude": 13.6600,
     "rangeKm": 115,
-    "streamUrl": "https://http-live.sr.se/p3-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p3-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=164&format=json"
   },
   {
     "name": "Din Gata Malmö",
@@ -125,7 +140,8 @@
     "latitude": 55.6050,
     "longitude": 13.0038,
     "rangeKm": 35,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "SR P4 Kristianstad Hörby",
@@ -133,7 +149,8 @@
     "latitude": 55.8660,
     "longitude": 13.6600,
     "rangeKm": 115,
-    "streamUrl": "https://http-live.sr.se/p4kristianstad-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p4kristianstad-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=101&format=json"
   },
   {
     "name": "Studentradion Uppsala",
@@ -141,7 +158,8 @@
     "latitude": 59.8586,
     "longitude": 17.6389,
     "rangeKm": 45,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "City 106.5 Uppsala",
@@ -149,7 +167,8 @@
     "latitude": 59.8586,
     "longitude": 17.6389,
     "rangeKm": 55,
-    "streamUrl": ""
+    "streamUrl": "",
+    "metadataUrl": ""
   },
   {
     "name": "SR P1 Östhammar seed",
@@ -157,7 +176,8 @@
     "latitude": 60.2591,
     "longitude": 18.3741,
     "rangeKm": 50,
-    "streamUrl": "https://http-live.sr.se/p1-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p1-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=132&format=json"
   },
   {
     "name": "SR P2 Östhammar seed",
@@ -165,7 +185,8 @@
     "latitude": 60.2591,
     "longitude": 18.3741,
     "rangeKm": 50,
-    "streamUrl": "https://http-live.sr.se/p2-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p2-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=163&format=json"
   },
   {
     "name": "SR P3 Östhammar seed",
@@ -173,7 +194,8 @@
     "latitude": 60.2591,
     "longitude": 18.3741,
     "rangeKm": 50,
-    "streamUrl": "https://http-live.sr.se/p3-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p3-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=164&format=json"
   },
   {
     "name": "SR P4 Uppland Östhammar seed",
@@ -181,6 +203,7 @@
     "latitude": 60.2591,
     "longitude": 18.3741,
     "rangeKm": 50,
-    "streamUrl": "https://http-live.sr.se/p4uppland-mp3-192"
+    "streamUrl": "https://http-live.sr.se/p4uppland-mp3-192",
+    "metadataUrl": "https://api.sr.se/api/v2/playlists/rightnow?channelid=114&format=json"
   }
 ]
