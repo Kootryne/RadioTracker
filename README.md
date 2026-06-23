@@ -8,7 +8,7 @@ It does **not** use a hidden phone FM chip or raw SDR scanning. Normal Android a
 2. loading a transmitter/station dataset,
 3. filtering stations that are within their configured estimated reception range,
 4. placing those stations on a drawn 87.5–108.0 MHz FM spectrum,
-5. trying to read live song metadata from configured metadata URLs first, then falling back to ICY/Shoutcast `StreamTitle` metadata from streams.
+5. trying to read live song metadata from configured metadata URLs first, then direct stream ICY metadata, then an online radio stream directory fallback.
 
 That means the spectrum placement can be accurate only when the station dataset is accurate. The current starter dataset includes Stockholm, a Skåne/Hörby seed set, and an Östhammar/Uppland seed set:
 
@@ -25,7 +25,7 @@ app/src/main/assets/stations_se.json
 - Station names are placed at their configured frequencies.
 - Estimated receive filtering with distance and range in kilometers.
 - Adjustable range threshold slider from 25% to 250%.
-- Live song metadata from station `metadataUrl` JSON first, then ICY/Shoutcast stream metadata when available.
+- Live song metadata from station `metadataUrl` JSON first, direct ICY stream metadata second, then a Radio Browser directory lookup when `streamSearchName` is configured.
 - GitHub Actions workflow that builds a debug APK.
 
 ## Range slider
@@ -40,12 +40,13 @@ Example: if a station has `rangeKm: 50`, setting the slider to `150%` lets it ap
 
 ## Song metadata
 
-Each station can have two metadata-related fields:
+Each station can have three metadata-related fields:
 
 - `metadataUrl`: preferred. The app fetches JSON from this URL and looks for a song `title` and `artist`.
 - `streamUrl`: fallback. The app asks the audio stream for ICY metadata and reads `StreamTitle` if the stream supports it.
+- `streamSearchName`: last-resort fallback. The app searches the Radio Browser public directory for a matching Swedish stream and then tries ICY metadata from that stream.
 
-A lot of modern streams do not expose useful ICY metadata, so `metadataUrl` is the better option when a station has an API.
+A lot of modern streams do not expose useful ICY metadata, so `metadataUrl` is still the best option when a station has an API. The directory fallback is mostly there so commercial stations like NRJ, RIX FM, Mix Megapol, Star FM, Bandit Rock, and Rockklassiker are no longer completely stuck with no source configured.
 
 ## Build the APK with GitHub Actions
 
@@ -62,10 +63,10 @@ The debug APK is installable for testing, but it is not Play Store signed.
 The bundled JSON database currently has:
 
 - Stockholm FM seed stations.
-- Skåne/Hörby entries for SR P1, SR P2, SR P3, P4 Malmöhus, P4 Kristianstad, plus Din Gata Malmö.
-- Uppsala/Östhammar-area seed entries, including Studentradion Uppsala, City 106.5 Uppsala, and SR P1/P2/P3/P4 Uppland Östhammar seed entries.
+- Skåne/Hörby entries for SR P1, SR P2, SR P3, P4 Malmöhus, P4 Kristianstad, Din Gata Malmö, plus Mix Megapol Malmö and Mix Megapol Helsingborg.
+- Uppsala/Östhammar-area seed entries, including Studentradion Uppsala, Bandit Rock Uppsala, City 106.5 Uppsala, RIX FM Uppsala/Östhammar seed, NRJ Uppsala/Östhammar seed, Mix Megapol Uppland seed, and SR P1/P2/P3/P4 Uppland Östhammar seed entries.
 
-The Östhammar entries are intentionally named `seed` because they should be replaced with exact transmitter data once you have a proper source.
+Entries named `seed` should be replaced with exact transmitter data once you have a proper source.
 
 ## Add more radio stations
 
@@ -79,11 +80,12 @@ Edit `app/src/main/assets/stations_se.json` and add objects like this:
   "longitude": 18.0686,
   "rangeKm": 60,
   "streamUrl": "https://example.com/live-stream",
-  "metadataUrl": "https://example.com/now-playing.json"
+  "metadataUrl": "https://example.com/now-playing.json",
+  "streamSearchName": "Example FM Sweden"
 }
 ```
 
-`streamUrl` and `metadataUrl` are optional. If both are empty, the app still displays the station, but it cannot show a live song title for that station yet.
+All metadata fields are optional. If `metadataUrl`, `streamUrl`, and `streamSearchName` are empty, the app still displays the station, but it cannot look up a live song title for that station yet.
 
 ## Important limitation
 
