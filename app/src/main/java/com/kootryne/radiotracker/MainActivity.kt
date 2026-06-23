@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -44,7 +46,7 @@ class MainActivity : Activity() {
     private lateinit var spectrumView: SpectrumView
     private lateinit var statusText: TextView
     private lateinit var rangeText: TextView
-    private lateinit var stationListText: TextView
+    private lateinit var stationListContainer: LinearLayout
     private lateinit var locationManager: LocationManager
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -91,36 +93,51 @@ class MainActivity : Activity() {
     private fun buildUi(): View {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.rgb(8, 13, 20))
-            setPadding(dp(16), dp(18), dp(16), dp(16))
+            setBackgroundColor(Color.rgb(6, 10, 18))
+            setPadding(dp(18), dp(14), dp(18), dp(14))
         }
+
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        root.addView(header, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+
+        val titleColumn = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        header.addView(titleColumn, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.15f))
 
         val title = TextView(this).apply {
             text = "RadioTracker"
             setTextColor(Color.WHITE)
-            textSize = 28f
-            gravity = Gravity.CENTER_HORIZONTAL
+            textSize = 24f
+            setTypeface(null, Typeface.BOLD)
         }
-        root.addView(title, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        titleColumn.addView(title, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
         statusText = TextView(this).apply {
             text = "Getting location..."
-            setTextColor(Color.rgb(170, 183, 199))
-            textSize = 14f
-            gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(0, dp(6), 0, dp(10))
+            setTextColor(Color.rgb(158, 174, 194))
+            textSize = 13f
+            setPadding(0, dp(2), 0, 0)
         }
-        root.addView(statusText, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        titleColumn.addView(statusText, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
-        spectrumView = SpectrumView(this)
-        root.addView(spectrumView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.2f))
+        val controls = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(12), dp(8), dp(12), dp(8))
+            background = roundedBackground(Color.rgb(13, 24, 38), Color.rgb(31, 48, 68), 18)
+        }
+        header.addView(controls, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.85f))
 
         rangeText = TextView(this).apply {
-            setTextColor(Color.rgb(225, 231, 240))
-            textSize = 14f
-            setPadding(0, dp(8), 0, dp(2))
+            setTextColor(Color.rgb(225, 234, 245))
+            textSize = 13f
+            setTypeface(null, Typeface.BOLD)
         }
-        root.addView(rangeText, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        controls.addView(rangeText, LinearLayout.LayoutParams(dp(170), LinearLayout.LayoutParams.WRAP_CONTENT))
         updateRangeText()
 
         val rangeSlider = SeekBar(this).apply {
@@ -139,22 +156,76 @@ class MainActivity : Activity() {
                 }
             })
         }
-        root.addView(rangeSlider, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        controls.addView(rangeSlider, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
 
         val rescanButton = Button(this).apply {
-            text = "Rescan current position"
+            text = "Rescan"
             setOnClickListener { findLocationAndScan() }
         }
-        root.addView(rescanButton, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        controls.addView(rescanButton, LinearLayout.LayoutParams(dp(112), LinearLayout.LayoutParams.WRAP_CONTENT))
 
-        stationListText = TextView(this).apply {
-            setTextColor(Color.rgb(225, 231, 240))
-            textSize = 15f
-            setPadding(0, dp(12), 0, 0)
-            text = "No stations loaded yet."
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, dp(14), 0, 0)
         }
-        val scrollView = ScrollView(this).apply { addView(stationListText) }
-        root.addView(scrollView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+        root.addView(content, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+
+        val leftPanel = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(14), dp(16), dp(14))
+            background = roundedBackground(Color.rgb(10, 18, 30), Color.rgb(35, 56, 82), 22)
+        }
+        content.addView(leftPanel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1.7f).apply {
+            setMargins(0, 0, dp(14), 0)
+        })
+
+        val spectrumHeader = TextView(this).apply {
+            text = "FM spectrum 87.5–108.0 MHz"
+            setTextColor(Color.WHITE)
+            textSize = 16f
+            setTypeface(null, Typeface.BOLD)
+        }
+        leftPanel.addView(spectrumHeader, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        val spectrumSubHeader = TextView(this).apply {
+            text = "Numbers on the graph match the station cards on the right."
+            setTextColor(Color.rgb(149, 166, 188))
+            textSize = 12f
+            setPadding(0, dp(2), 0, dp(8))
+        }
+        leftPanel.addView(spectrumSubHeader, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        spectrumView = SpectrumView(this)
+        leftPanel.addView(spectrumView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+
+        val rightPanel = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(14), dp(14), dp(14), dp(14))
+            background = roundedBackground(Color.rgb(10, 18, 30), Color.rgb(35, 56, 82), 22)
+        }
+        content.addView(rightPanel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
+
+        val stationTitle = TextView(this).apply {
+            text = "Stations"
+            setTextColor(Color.WHITE)
+            textSize = 16f
+            setTypeface(null, Typeface.BOLD)
+        }
+        rightPanel.addView(stationTitle, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        val stationHint = TextView(this).apply {
+            text = "Nearby, sorted by frequency"
+            setTextColor(Color.rgb(149, 166, 188))
+            textSize = 12f
+            setPadding(0, dp(2), 0, dp(8))
+        }
+        rightPanel.addView(stationHint, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        stationListContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        val scrollView = ScrollView(this).apply { addView(stationListContainer) }
+        rightPanel.addView(scrollView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
 
         return root
     }
@@ -249,14 +320,14 @@ class MainActivity : Activity() {
             .filter { it.distanceKm <= it.rangeKm * multiplier }
             .sortedBy { it.frequencyMhz }
 
-        statusText.text = "$status • ${visibleStations.size} likely FM stations nearby"
+        statusText.text = "$status • ${visibleStations.size} nearby stations"
         updateStationViews()
         if (reloadMetadata) loadNowPlayingMetadata()
     }
 
     private fun updateRangeText() {
         if (::rangeText.isInitialized) {
-            rangeText.text = "Range threshold: $rangePercent% • lower = stricter, higher = catches weaker/farther stations"
+            rangeText.text = "Range $rangePercent%"
         }
     }
 
@@ -264,14 +335,39 @@ class MainActivity : Activity() {
         spectrumView.stations = visibleStations
         spectrumView.invalidate()
 
-        stationListText.text = if (visibleStations.isEmpty()) {
-            "No stations found near this position with the current range threshold. Try increasing the range slider, or add more transmitters in app/src/main/assets/stations_se.json."
-        } else {
-            visibleStations.mapIndexed { index, station ->
-                val distanceText = "${(station.distanceKm * 10.0).roundToInt() / 10.0} km away"
-                val effectiveRange = "threshold ${(station.rangeKm * rangePercent / 100.0 * 10.0).roundToInt() / 10.0} km"
-                "${index + 1}. ${station.frequencyMhz} MHz — ${station.name}\n${station.nowPlaying}\n$distanceText • $effectiveRange"
-            }.joinToString(separator = "\n\n")
+        stationListContainer.removeAllViews()
+        if (visibleStations.isEmpty()) {
+            stationListContainer.addView(stationCardText("No stations found\nIncrease range, or add more transmitters to the JSON database.", muted = true))
+            return
+        }
+
+        visibleStations.forEachIndexed { index, station ->
+            val distanceText = "${formatOneDecimal(station.distanceKm)} km away"
+            val effectiveRange = "${formatOneDecimal(station.rangeKm * rangePercent / 100.0)} km threshold"
+            val cardText = buildString {
+                append("${index + 1}. ${station.frequencyMhz} MHz  •  ${station.name}\n")
+                append(station.nowPlaying.ifBlank { "Waiting for metadata" })
+                append("\n$distanceText  •  $effectiveRange")
+            }
+            stationListContainer.addView(stationCardText(cardText, muted = false))
+        }
+    }
+
+    private fun stationCardText(text: String, muted: Boolean): TextView {
+        return TextView(this).apply {
+            this.text = text
+            setTextColor(if (muted) Color.rgb(150, 165, 185) else Color.rgb(232, 239, 249))
+            textSize = 13.5f
+            setLineSpacing(0f, 1.08f)
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            background = roundedBackground(
+                fill = if (muted) Color.rgb(12, 22, 36) else Color.rgb(15, 28, 45),
+                stroke = if (muted) Color.rgb(35, 50, 70) else Color.rgb(42, 72, 102),
+                radiusDp = 16
+            )
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, 0, 0, dp(10))
+            }
         }
     }
 
@@ -302,10 +398,12 @@ class MainActivity : Activity() {
         val directIcyText = station.streamUrl?.let { fetchIcyStreamTitle(it) }
         if (!directIcyText.isNullOrBlank()) return directIcyText
 
-        val directoryIcyText = fetchRadioBrowserNowPlaying(station)
-        if (!directoryIcyText.isNullOrBlank()) return directoryIcyText
+        val directoryText = fetchRadioBrowserNowPlaying(station)
+        if (!directoryText.isNullOrBlank()) return directoryText
 
-        return if (station.metadataUrl.isNullOrBlank() && station.streamUrl.isNullOrBlank() && station.streamSearchName.isNullOrBlank()) {
+        return if (station.name.contains("NRJ", ignoreCase = true)) {
+            "NRJ live station found • song title not exposed by stream"
+        } else if (station.metadataUrl.isNullOrBlank() && station.streamUrl.isNullOrBlank() && station.streamSearchName.isNullOrBlank()) {
             "No public song metadata source configured"
         } else {
             "No song metadata found"
@@ -355,34 +453,48 @@ class MainActivity : Activity() {
     }
 
     private fun fetchRadioBrowserNowPlaying(station: RadioStation): String? {
-        val searchName = stationSearchName(station)
-        if (searchName.isBlank()) return null
+        var streamWasFound = false
 
-        val encodedName = URLEncoder.encode(searchName, "UTF-8")
-        val searchUrl = "https://de1.api.radio-browser.info/json/stations/search?name=$encodedName&countrycode=SE&hidebroken=true&limit=8&order=clickcount&reverse=true"
+        for (searchName in stationSearchNames(station)) {
+            val encodedName = URLEncoder.encode(searchName, "UTF-8")
+            val searchUrl = "https://de1.api.radio-browser.info/json/stations/search?name=$encodedName&countrycode=SE&hidebroken=true&limit=10&order=clickcount&reverse=true"
 
-        return try {
-            val jsonText = fetchText(searchUrl) ?: return null
-            val results = JSONArray(jsonText)
-            for (index in 0 until results.length()) {
-                val item = results.optJSONObject(index) ?: continue
-                val urlResolved = item.optString("url_resolved", "").trim()
-                val url = item.optString("url", "").trim()
-                val streamUrl = urlResolved.ifBlank { url }
-                if (streamUrl.isBlank()) continue
+            try {
+                val jsonText = fetchText(searchUrl) ?: continue
+                val results = JSONArray(jsonText)
+                for (index in 0 until results.length()) {
+                    val item = results.optJSONObject(index) ?: continue
+                    val name = item.optString("name", "")
+                    if (station.name.contains("NRJ", ignoreCase = true) && !name.contains("NRJ", ignoreCase = true)) {
+                        continue
+                    }
 
-                val song = fetchIcyStreamTitle(streamUrl)
-                if (!song.isNullOrBlank()) return song
+                    val urlResolved = item.optString("url_resolved", "").trim()
+                    val url = item.optString("url", "").trim()
+                    val streamUrl = urlResolved.ifBlank { url }
+                    if (streamUrl.isBlank()) continue
+
+                    streamWasFound = true
+                    val song = fetchIcyStreamTitle(streamUrl)
+                    if (!song.isNullOrBlank()) return song
+                }
+            } catch (_: Exception) {
             }
-            null
-        } catch (_: Exception) {
+        }
+
+        return if (streamWasFound && station.name.contains("NRJ", ignoreCase = true)) {
+            "NRJ live station found • song title not exposed by stream"
+        } else {
             null
         }
     }
 
-    private fun stationSearchName(station: RadioStation): String {
-        station.streamSearchName?.let { return it }
-        return station.name
+    private fun stationSearchNames(station: RadioStation): List<String> {
+        if (station.name.contains("NRJ", ignoreCase = true)) {
+            return listOf("NRJ", "NRJ Sweden", "NRJ Sverige", "NRJ Hit Music Only")
+        }
+
+        val base = station.streamSearchName ?: station.name
             .replace(" Stockholm", "")
             .replace(" Hörby", "")
             .replace(" Malmö", "")
@@ -390,6 +502,7 @@ class MainActivity : Activity() {
             .replace(" Östhammar", "")
             .replace(" seed", "")
             .trim()
+        return listOf(base).filter { it.isNotBlank() }.distinct()
     }
 
     private fun fetchText(url: String): String? {
@@ -458,7 +571,16 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun roundedBackground(fill: Int, stroke: Int, radiusDp: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            setColor(fill)
+            cornerRadius = dp(radiusDp).toFloat()
+            setStroke(dp(1), stroke)
+        }
+    }
+
     private fun stationKey(station: RadioStation): String = "${station.name}|${station.frequencyMhz}"
+    private fun formatOneDecimal(value: Double): String = "${(value * 10.0).roundToInt() / 10.0}"
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).roundToInt()
 }
 
@@ -503,58 +625,64 @@ private class SpectrumView(context: Context) : View(context) {
     var stations: List<RadioStation> = emptyList()
 
     private val axisPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(112, 129, 148)
+        color = Color.rgb(115, 135, 160)
         strokeWidth = 3f
     }
-    private val tickPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(76, 93, 112)
-        strokeWidth = 2f
+    private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(35, 55, 78)
+        strokeWidth = 1.5f
     }
     private val stationPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(100, 210, 255)
+        color = Color.rgb(94, 213, 255)
         strokeWidth = 4f
     }
     private val markerFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(100, 210, 255)
+        color = Color.rgb(94, 213, 255)
         style = Paint.Style.FILL
     }
     private val markerNumberPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(8, 13, 20)
+        color = Color.rgb(7, 12, 20)
         textSize = sp(11f)
         textAlign = Paint.Align.CENTER
         isFakeBoldText = true
     }
-    private val smallTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.rgb(178, 190, 205)
+    private val tickTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(176, 191, 211)
+        textSize = sp(10f)
+        textAlign = Paint.Align.CENTER
+    }
+    private val footerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(145, 162, 184)
         textSize = sp(10f)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawColor(Color.rgb(11, 18, 29))
+        canvas.drawColor(Color.rgb(9, 17, 29))
 
-        val left = dp(20).toFloat()
-        val right = width - dp(20).toFloat()
-        val axisY = height - dp(64).toFloat()
-        val top = dp(28).toFloat()
-
-        canvas.drawLine(left, axisY, right, axisY, axisPaint)
+        val left = dp(28).toFloat()
+        val right = width - dp(28).toFloat()
+        val axisY = height - dp(46).toFloat()
+        val top = dp(26).toFloat()
 
         for (mhz in 88..108 step 2) {
             val x = xForFrequency(mhz.toDouble(), left, right)
-            canvas.drawLine(x, axisY - dp(10), x, axisY + dp(10), tickPaint)
-            canvas.drawText("$mhz", x - dp(10), axisY + dp(30), smallTextPaint)
+            canvas.drawLine(x, top, x, axisY + dp(8), gridPaint)
+            canvas.drawLine(x, axisY - dp(8), x, axisY + dp(8), axisPaint)
+            canvas.drawText("$mhz", x, axisY + dp(28), tickTextPaint)
         }
-        canvas.drawText("FM ${MIN_FM_MHZ}–${MAX_FM_MHZ} MHz • numbers match the list below", left, height - dp(18).toFloat(), smallTextPaint)
+
+        canvas.drawLine(left, axisY, right, axisY, axisPaint)
+        canvas.drawText("FM ${MIN_FM_MHZ}–${MAX_FM_MHZ} MHz", left, height - dp(12).toFloat(), footerPaint)
 
         stations.forEachIndexed { index, station ->
             val x = xForFrequency(station.frequencyMhz, left, right)
-            val stagger = index % 4
-            val markerY = top + dp(18) + stagger * dp(30)
+            val stagger = index % 5
+            val markerY = top + dp(18) + stagger * dp(26)
             val radius = dp(10).toFloat()
 
             canvas.drawLine(x, axisY, x, markerY, stationPaint)
-            canvas.drawCircle(x, axisY, dp(5).toFloat(), stationPaint)
+            canvas.drawCircle(x, axisY, dp(5).toFloat(), markerFillPaint)
             canvas.drawCircle(x, markerY, radius, markerFillPaint)
             canvas.drawText("${index + 1}", x, markerY + dp(4), markerNumberPaint)
         }
