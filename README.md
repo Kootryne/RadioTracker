@@ -8,7 +8,7 @@ It does **not** use a hidden phone FM chip or raw SDR scanning. Normal Android a
 2. loading a transmitter/station dataset,
 3. filtering stations that are within their configured estimated reception range,
 4. placing those stations on a drawn 87.5–108.0 MHz FM spectrum,
-5. trying to read live `StreamTitle` metadata from configured internet radio streams.
+5. trying to read live song metadata from configured metadata URLs first, then falling back to ICY/Shoutcast `StreamTitle` metadata from streams.
 
 That means the spectrum placement can be accurate only when the station dataset is accurate. The current starter dataset includes Stockholm, a Skåne/Hörby seed set, and an Östhammar/Uppland seed set:
 
@@ -25,7 +25,7 @@ app/src/main/assets/stations_se.json
 - Station names are placed at their configured frequencies.
 - Estimated receive filtering with distance and range in kilometers.
 - Adjustable range threshold slider from 25% to 250%.
-- Live song metadata from ICY/Shoutcast-style stream metadata when a stream URL is configured.
+- Live song metadata from station `metadataUrl` JSON first, then ICY/Shoutcast stream metadata when available.
 - GitHub Actions workflow that builds a debug APK.
 
 ## Range slider
@@ -37,6 +37,15 @@ The app now has a range threshold slider:
 - Higher values are looser, so weak or farther stations may be included.
 
 Example: if a station has `rangeKm: 50`, setting the slider to `150%` lets it appear up to about `75 km` away.
+
+## Song metadata
+
+Each station can have two metadata-related fields:
+
+- `metadataUrl`: preferred. The app fetches JSON from this URL and looks for a song `title` and `artist`.
+- `streamUrl`: fallback. The app asks the audio stream for ICY metadata and reads `StreamTitle` if the stream supports it.
+
+A lot of modern streams do not expose useful ICY metadata, so `metadataUrl` is the better option when a station has an API.
 
 ## Build the APK with GitHub Actions
 
@@ -69,11 +78,12 @@ Edit `app/src/main/assets/stations_se.json` and add objects like this:
   "latitude": 59.3293,
   "longitude": 18.0686,
   "rangeKm": 60,
-  "streamUrl": "https://example.com/live-stream"
+  "streamUrl": "https://example.com/live-stream",
+  "metadataUrl": "https://example.com/now-playing.json"
 }
 ```
 
-`streamUrl` is optional. If it is empty, the app still displays the station, but it cannot show a live song title for that station yet.
+`streamUrl` and `metadataUrl` are optional. If both are empty, the app still displays the station, but it cannot show a live song title for that station yet.
 
 ## Important limitation
 
