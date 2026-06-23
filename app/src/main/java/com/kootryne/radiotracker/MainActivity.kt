@@ -267,11 +267,11 @@ class MainActivity : Activity() {
         stationListText.text = if (visibleStations.isEmpty()) {
             "No stations found near this position with the current range threshold. Try increasing the range slider, or add more transmitters in app/src/main/assets/stations_se.json."
         } else {
-            visibleStations.joinToString(separator = "\n\n") { station ->
+            visibleStations.mapIndexed { index, station ->
                 val distanceText = "${(station.distanceKm * 10.0).roundToInt() / 10.0} km away"
                 val effectiveRange = "threshold ${(station.rangeKm * rangePercent / 100.0 * 10.0).roundToInt() / 10.0} km"
-                "${station.frequencyMhz} MHz — ${station.name}\n${station.nowPlaying}\n$distanceText • $effectiveRange"
-            }
+                "${index + 1}. ${station.frequencyMhz} MHz — ${station.name}\n${station.nowPlaying}\n$distanceText • $effectiveRange"
+            }.joinToString(separator = "\n\n")
         }
     }
 
@@ -514,9 +514,15 @@ private class SpectrumView(context: Context) : View(context) {
         color = Color.rgb(100, 210, 255)
         strokeWidth = 4f
     }
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
-        textSize = sp(12f)
+    private val markerFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(100, 210, 255)
+        style = Paint.Style.FILL
+    }
+    private val markerNumberPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(8, 13, 20)
+        textSize = sp(11f)
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true
     }
     private val smallTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.rgb(178, 190, 205)
@@ -539,20 +545,18 @@ private class SpectrumView(context: Context) : View(context) {
             canvas.drawLine(x, axisY - dp(10), x, axisY + dp(10), tickPaint)
             canvas.drawText("$mhz", x - dp(10), axisY + dp(30), smallTextPaint)
         }
-        canvas.drawText("FM ${MIN_FM_MHZ}–${MAX_FM_MHZ} MHz", left, height - dp(18).toFloat(), smallTextPaint)
+        canvas.drawText("FM ${MIN_FM_MHZ}–${MAX_FM_MHZ} MHz • numbers match the list below", left, height - dp(18).toFloat(), smallTextPaint)
 
         stations.forEachIndexed { index, station ->
             val x = xForFrequency(station.frequencyMhz, left, right)
-            val labelLevel = index % 5
-            val labelY = top + labelLevel * dp(48)
+            val stagger = index % 4
+            val markerY = top + dp(18) + stagger * dp(30)
+            val radius = dp(10).toFloat()
 
-            canvas.drawLine(x, axisY, x, labelY + dp(24), stationPaint)
+            canvas.drawLine(x, axisY, x, markerY, stationPaint)
             canvas.drawCircle(x, axisY, dp(5).toFloat(), stationPaint)
-            canvas.drawCircle(x, labelY + dp(24), dp(5).toFloat(), stationPaint)
-
-            val labelX = (x - dp(54)).coerceIn(left, right - dp(112))
-            canvas.drawText("${station.frequencyMhz} ${station.name}", labelX, labelY, textPaint)
-            canvas.drawText(station.nowPlaying.take(38), labelX, labelY + dp(17), smallTextPaint)
+            canvas.drawCircle(x, markerY, radius, markerFillPaint)
+            canvas.drawText("${index + 1}", x, markerY + dp(4), markerNumberPaint)
         }
     }
 
