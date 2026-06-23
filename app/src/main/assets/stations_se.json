@@ -42,7 +42,8 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "Mix Megapol"
   },
   {
     "name": "Lugna Favoriter Stockholm",
@@ -51,7 +52,8 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "Lugna Favoriter"
   },
   {
     "name": "NRJ Stockholm",
@@ -60,7 +62,8 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "NRJ Sweden"
   },
   {
     "name": "RIX FM Stockholm",
@@ -69,7 +72,8 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "RIX FM"
   },
   {
     "name": "Bandit Rock Stockholm",
@@ -78,7 +82,8 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "Bandit Rock"
   },
   {
     "name": "Rockklassiker Stockholm",
@@ -87,7 +92,8 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "Rockklassiker"
   },
   {
     "name": "Star FM Stockholm",
@@ -96,7 +102,8 @@
     "longitude": 18.0686,
     "rangeKm": 65,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "Star FM Sweden"
   },
   {
     "name": "SR P1 Hörby",
@@ -141,7 +148,28 @@
     "longitude": 13.0038,
     "rangeKm": 35,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "Din Gata"
+  },
+  {
+    "name": "Mix Megapol Malmö",
+    "frequencyMhz": 107.0,
+    "latitude": 55.5791,
+    "longitude": 13.0109,
+    "rangeKm": 55,
+    "streamUrl": "",
+    "metadataUrl": "",
+    "streamSearchName": "Mix Megapol"
+  },
+  {
+    "name": "Mix Megapol Helsingborg",
+    "frequencyMhz": 106.0,
+    "latitude": 56.0465,
+    "longitude": 12.6945,
+    "rangeKm": 55,
+    "streamUrl": "",
+    "metadataUrl": "",
+    "streamSearchName": "Mix Megapol"
   },
   {
     "name": "SR P4 Kristianstad Hörby",
@@ -159,7 +187,18 @@
     "longitude": 17.6389,
     "rangeKm": 45,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "Studentradion Uppsala"
+  },
+  {
+    "name": "Bandit Rock Uppsala",
+    "frequencyMhz": 101.1,
+    "latitude": 59.8586,
+    "longitude": 17.6389,
+    "rangeKm": 65,
+    "streamUrl": "",
+    "metadataUrl": "",
+    "streamSearchName": "Bandit Rock"
   },
   {
     "name": "City 106.5 Uppsala",
@@ -168,7 +207,38 @@
     "longitude": 17.6389,
     "rangeKm": 55,
     "streamUrl": "",
-    "metadataUrl": ""
+    "metadataUrl": "",
+    "streamSearchName": "City 106.5 Uppsala"
+  },
+  {
+    "name": "RIX FM Uppsala/Östhammar seed",
+    "frequencyMhz": 105.5,
+    "latitude": 60.2591,
+    "longitude": 18.3741,
+    "rangeKm": 75,
+    "streamUrl": "",
+    "metadataUrl": "",
+    "streamSearchName": "RIX FM"
+  },
+  {
+    "name": "NRJ Uppsala/Östhammar seed",
+    "frequencyMhz": 105.1,
+    "latitude": 60.2591,
+    "longitude": 18.3741,
+    "rangeKm": 75,
+    "streamUrl": "",
+    "metadataUrl": "",
+    "streamSearchName": "NRJ Sweden"
+  },
+  {
+    "name": "Mix Megapol Uppland seed",
+    "frequencyMhz": 104.3,
+    "latitude": 60.2591,
+    "longitude": 18.3741,
+    "rangeKm": 75,
+    "streamUrl": "",
+    "metadataUrl": "",
+    "streamSearchName": "Mix Megapol"
   },
   {
     "name": "SR P1 Östhammar seed",
